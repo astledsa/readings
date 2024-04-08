@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
+  <title>TIHR</title>
+</head>
+
+<style>
+  html, body {
+    border: 0px; 
+    margin: 0px;
+    padding: 0px;
+    font-family: "Grenze Gotisch", serif;
+  }
+  h1 {
+    font-size: 3em;
+    opacity: 1;
+    text-align: center;
+  }
+  p {
+    text-align: center;
+    width: 40%;
+    margin-left: 30%;
+  }
+  main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    margin-left: 30%;
+  }
+  ul {
+    list-style: none;
+  }
+  canvas {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: -1;
+  }
+  a {
+    color: inherit;
+  }
+  a:link {
+    color: inherit;
+  }
+  .decorator {
+    font-size: large;
+    padding: 0em 0.5em;
+  }
+  .p-list {
+    display: flex;
+    width: 100%;
+    margin: 1em 0 0 0;
+    text-align: center;
+    font-size: 0.7em;
+    flex-wrap: wrap;
+    font-weight: 500;
+  }
+  .a-list {
+    text-decoration: none;
+    opacity: 0.8;
+  }
+  .a-list:hover {
+    text-decoration: underline;
+    opacity: 1;
+  }
+  @media only screen and (max-width: 768px) {
+    main, p, .p-list {
+      margin: 1em;
+      width: auto;
+    }
+  }
+  
+</style>
+
+<body>
+  <h1>
+    The Library
+  </h1>
+  <p>
+    This site was made because I got addicted to making pretty single page index.html sites for small things. Might end up with 
+    a collection of such sites, check out my <a href="https://twitter.com/AstleDsa">twitter</a> profile for more! Feels like an art, to be able to "paint" such sites with
+    no framework or library, just a single file of artistry. Anyways, below is a list of things I've read over the years cause
+    why not. Hopefully this list continues to grow!
+  </p>
+  <main>
+    <h2 id="BooksFiction" style="text-align: center;">Books [Non Fiction]</h2>
+    <h2 id="Blogs" style="text-align: center;">Blogs</h2>
+    <h2 id="Mangas" style="text-align: center;">Mangas</h2>
+    <h2 id="BooksNFiction" style="text-align: center;">Books [Fiction]</h2>
+  </main>
+</body>
+
+
+<script type="text/javascript">
+  let mainBooks = document.getElementById('BooksFiction');
+  let mainBooksNF = document.getElementById('BooksNFiction');
+  let Blogs = document.getElementById('Blogs');
+  let Mangas = document.getElementById('Mangas');
+  let books = {
+    "linear Algebra": "https://math.mit.edu/~gs/linearalgebra/",
+    "Sapiens": "https://www.ynharari.com/book/sapiens-2/",
+    "Intelligent Investor": "https://www.amazon.in/Intelligent-Investor-Revised-Definitive-Essentials/dp/0060555661",
+    "Deep Work": "https://www.amazon.com/Deep-Work-Focused-Success-Distracted/dp/1455586692",
+    "Mathematics for Machine Learning": "https://mml-book.github.io/",
+    "Homo Deus": "https://www.ynharari.com/book/homo-deus/",
+    "21 Lessons for 21st century": "https://www.ynharari.com/book/21-lessons-book/",
+    "Rich Dad Poor Dad": "https://www.amazon.com/Rich-Dad-Poor-Teach-Middle/dp/1612680194",
+    "Bayesian Statistics: the fun way": "https://www.amazon.in/Bayesian-Statistics-Fun-Will-Kurt/dp/1593279566",
+    "Zero to One": "https://www.amazon.com/Zero-One-Notes-Startups-Future/dp/0804139296",
+    "7 laws of magical thinking": "https://www.amazon.in/Laws-Magical-Thinking-Irrational-Beliefs/dp/0452298903",
+    "Poor economics": "https://www.amazon.in/Poor-Economics-Rethinking-Poverty-Ways/dp/8184002807", 
+    "Perfect People Skills": "https://www.amazon.in/Perfect-People-Skills-Andrew-Floyer/dp/1847941613",
+    "Horrible Science": "https://www.amazon.in/Blood-Bones-Body-Horrible-Science/dp/0590558072",
+    "The four horesemen": "https://www.amazon.in/Four-Horsemen-Discussion-Revolution-Foreword/dp/0593080394",
+    "StoryWorthy": "https://www.amazon.in/Storyworthy-Engage-Persuade-through-Storytelling/dp/1608685489",
+    "Is God a Mathematician?": "https://www.amazon.in/God-Mathematician-Mario-Livio/dp/0743294068",
+    "Emotional Intelligence": "https://www.amazon.in/Emotional-Intelligence-Daniel-Goleman/dp/9382563792",
+    "Freakonomics": "https://www.amazon.in/Freakonomics-Economist-Explores-Hidden-Everything/dp/0060731338",
+    "Super Freakonomics": "https://www.amazon.in/Superfreakonomics-Cooling-Patriotic-Prostitutes-Insurance/dp/0062312871",
+    "Psychology of Money": "https://www.amazon.in/Psychology-Money-Morgan-Housel/dp/9390166268",
+    "Guns, Germs and steel": "https://www.amazon.in/Guns-Germs-Steel-Jared-Diamond/dp/0099302780",
+    "Grokking Deep Learning": "https://edu.anarcho-copy.org/Algorithm/grokking-deep-learning.pdf",
+    "Immune": "https://www.amazon.in/IMMUNE-JOURNEY-MYSTERIOUS-SYSTEM-KEEPS/dp/1529360684",
+    "Godel, Escher and Bach": "https://www.amazon.in/Godel-Escher-Bach-Douglas-Hofstadter/dp/0465026567",
+    "The Blank Slate": "https://www.amazon.in/Blank-Slate-Modern-Denial-Nature/dp/0142003344",
+    "The Acscent of Money": "https://www.amazon.in/Ascent-Money-Niall-Ferguson/dp/0141990260/ref=sr_1_1?crid=1P7TY4ATFUBOE&dib=eyJ2IjoiMSJ9.LHVffw4fB4A1-iHDqNCIGmkFD2TUxhmCxwBILYGbI3AtC0RGV-nVNiKZa_tM2KM7AAETecA8r5XnbbzRQsCl4u3tgxIFWYgtQGbdR4j-P3YTJbQIIP65j52z28mZvMzYYbmKwQEqsgHHxOimZbBEOef-t9Z1hhd31hFwLNlQfCi2RGxZgfpDJI-kGpYtrgLEXSjKh1aAKNv5trZaQPeH-6uYVK4sjnC05fZ4J2bKNLs.RzI72fpS5Z_Ezzj0zN5cb_I2fcm46Obwbo3vCLIkHWI&dib_tag=se&keywords=Ascent+of+money&qid=1712539067&s=books&sprefix=ascent+of+money,stripbooks,179&sr=1-1",
+    "1001 Deadly Checkmates": "https://sah-conpet.com/phpbb/images/1001%20Deadly%20Checkmates%20(John%20Nunn).pdf",
+    "Game Changer": "https://www.amazon.in/Game-Changer-AlphaZeros-Groundbreaking-Strategies/dp/9056918184"
+  };
+  let booksNonFIc = {
+    "Heroes of Olympus Series": "https://rickriordan.com/series/the-heroes-of-olympus/",
+    "Percy Jackson Series": "https://rickriordan.com/series/percy-jackson-and-the-olympians/",
+    "Harry Potter Series": "https://www.goodreads.com/series/45175-harry-potter",
+    "The boy in stripped pajamas": "https://www.amazon.in/Striped-Pyjamas-Vintage-Childrens-Classics/dp/0099572869",
+    "Lexi": "https://www.goodreads.com/en/book/show/3189713",
+    "Animal Farm": "https://www.amazon.in/Animal-Farm-George-Orwell/dp/0143416316",
+    "Fantastic Mr. Fox": "https://www.amazon.in/Fantastic-Mr-Fox-Dahl-Fiction/dp/0141365447",
+    "The Witches": "https://www.amazon.in/Witches-Roald-Dahl/dp/014241011X",
+    "The big friendly giant": "https://www.amazon.in/BFG-Roald-Dahl/dp/0142410381",
+    "Sherlock Holmes": "https://www.amazon.in/Sherlock-Holmes-Complete-Collection-Arthur/dp/9390213568",
+    "The Silent Widow": "https://www.goodreads.com/en/book/show/37658229",
+    "The President is dead": "",
+    "The Diary of a Wimpy Kid Series": "https://wimpykid.com/books/",
+    "Dan Brown's series": "https://danbrown.com/",
+    "Beast Quest Series": "https://beast-quest.com/#",
+    "The magical drum and other stories": "https://www.amazon.in/Magic-Drum-Other-Favourite-Stories/dp/0143333631",
+    "The Hobbit": "https://www.amazon.in/Hobbit-There-Back-Again/dp/054792822X",
+    "Goosebumps Series": "https://www.amazon.in/goosebumps-books/s?k=goosebumps+books",
+    "Peter Pan": "https://www.amazon.in/Adventure-Neverland-Adventures-Friendship-Delightful/dp/9386538377",
+    "Secret Seven": "https://toppsta.com/books/series/4541/secret-seven",
+    "Sudha Murthy": "https://www.amazon.in/Books-Sudha-Murty/s?rh=n:976389031,p_27:Sudha+Murty",
+    "A thousand stitches": "https://www.amazon.in/Three-Thousand-Stitches-Ordinary-Extraordinary/dp/0143440055",
+    "Wise and OtherWise": "https://www.amazon.in/Wise-Otherwise-salute-Sudha-Murty/dp/0143062220",
+    "The three body problem": "https://www.amazon.in/THREE-BODY-PROBLEM-Cixin-Liu/dp/0765377063",
+    "The color of magic": "https://www.amazon.in/Colour-Magic-Discworld-Novel-Novels/dp/0552166596"
+  };
+  let mangas = {
+    "Berserk": "https://chapmanganelo.com/manga-ma89768",
+    "One Piece": "https://chapmanganelo.com/manga-aa88620",
+    "Rainbow": "https://chapmanganelo.com/manga-do88860",
+    "Promised Neverland": "https://chapmanganelo.com/manga-vl109657",
+    "Kingdom": "https://chapmanganelo.com/manga-qi88728",
+    "Holyland": "https://chapmanganelo.com/manga-ms101286",
+    "Grand Blue": "https://chapmanganelo.com/manga-uo109434",
+    "Chainsaw man": "https://chapmanganelo.com/manga-dn117633",
+    "Kaiju No. 8": "https://chapmanganelo.com/manga-in123133",
+    "Solo Leveling": "https://chapmanganelo.com/manga-dr117685",
+    "Baki": "https://m.manganelo.com/manga-uc89548",
+    "Monster": "https://monster-manga.online/",
+    "Uzumaki": "https://chapmanganelo.com/manga-ni101928",
+    "Vagabond": "https://chapmanganelo.com/manga-je92124",
+    "One Punch Man": "https://w7.read-one-punchman.com/",
+    "Tokyo Ghoul": "https://chapmanganelo.com/manga-od92597",
+    "Jagaaaan": "https://chapmanganelo.com/manga-xv112289",
+    "Dandadan": "https://chapmanganelo.com/manga-lp126209",
+    "Sun Ken Rock": "https://chapmanganelo.com/manga-zo89082",
+    "Fullmetal Alchemist": "https://chapmanganelo.com/manga-uh93175",
+    "Sakamoto Days": "https://chapmanganelo.com/manga-lg125626",
+    "Hell's Paradise": "https://chapmanganelo.com/manga-bi115976",
+    "Oyasumi Pun Pun": "https://chapmanganelo.com/manga-fa94346",
+    "Seven Deadly Sins": "https://chapmanganelo.com/manga-pl92757"
+  };
+  let blogs = {
+    "Quantum Country": "https://quantum.country/",
+    "Forex Trading": "https://www.babypips.com/learn/forex",
+    "How Computers Work": "https://cpu.land/",
+    "Fortune's Algorithm": "https://jacquesheunis.com/post/fortunes-algorithm/",
+    "When Trees Fall": "http://blog.wtf.sg/",
+    "T-SNE": "https://distill.pub/2016/misread-tsne/",
+    "Embeddings": "https://udara.io/embeddings",
+    "Grokking Diffusion Models": "https://nonint.com/2022/10/31/grokking-diffusion-models/",
+    "Reverse-Mode Automatic Differentiation": "https://okarthikb.github.io/blog/rmad.html",
+    "20 Modern Heresies": "https://www.secretorum.life/p/20-modern-heresies",
+    "Compute Multipliers": "https://nonint.com/2023/11/05/compute-multipliers/",
+    "The it in AI models": "https://nonint.com/2023/06/10/the-it-in-ai-models-is-the-dataset/",
+    "Towards 1-bit Machine Learning Models": "https://mobiusml.github.io/1bit_blog/",
+    "Semi-Colon Shaped People": "https://studio.ribbonfarm.com/p/semicolon-shaped-people",
+    "Challenging C projects": "https://austinhenley.com/blog/challengingprojects.html",
+    "Mamba Explained": "https://srush.github.io/annotated-mamba/hard.html",
+    "Mixture of Experts": "https://yuxi-liu-wired.github.io/essays/posts/mixture-of-experts/",
+    "On Casual Reasoning of LLMs": "https://aclanthology.org/2023.findings-acl.574/",
+    "A bitter lesson": "http://www.incompleteideas.net/IncIdeas/BitterLesson.html",
+    "Deep Learning History": "https://people.idsia.ch/~juergen/deep-learning-history.html",
+    "Learning Machine Learning": "https://vickiboykis.com/2022/11/10/how-i-learn-machine-learning/",
+    "A GPU analysis": "https://timdettmers.com/2023/01/30/which-gpu-for-deep-learning/",
+    "Pytorch Internals": "http://blog.ezyang.com/2019/05/pytorch-internals/",
+    "Deep Work Guide": "https://todoist.com/inspiration/deep-work"
+  };
+
+  function populate (mainHeader, listDict) {
+    let container = document.createElement('p');
+
+    container.classList.add('p-list');
+
+    for (let key in listDict) {
+      let name = document.createElement('a');
+      let decorater = document.createElement('div');
+      name.innerHTML = key
+      name.href = listDict[key];
+      name.classList.add('a-list');
+      decorater.innerHTML = "&#903;"
+      decorater.classList.add('decorator');
+      container.appendChild(name);
+      container.appendChild(decorater);
+    }
+
+    mainHeader.appendChild(container);
+  }
+
+  function setup() {
+    createCanvas(screen.width, screen.height);
+    noiseDetail(4); 
+    background(250); 
+  }
+
+  function draw() {
+    for (let i = 0; i < 500; i++) {
+      let x = random(width);
+      let y = random(height);
+      let grey = map(noise(x, y), 0, 1, 150, 200);
+      fill(grey);
+      noStroke();
+      ellipse(x, y, random(1, 2));
+    }
+
+    for (let i = 0; i < 250; i++) {
+      let x1 = random(width);
+      let y1 = random(height);
+      let x2 = x1 + random(-10, 10);
+      let y2 = y1 + random(10, 30);
+      stroke(210);
+      strokeWeight(random(0.1, 0.5));
+      line(x1, y1, x2, y2);
+    }
+
+    noLoop(); 
+  }
+
+  populate(mainBooks, books);
+  populate(mainBooksNF, booksNonFIc);
+  populate(Blogs, blogs);
+  populate(Mangas, mangas)
+
+</script>
+</html>
