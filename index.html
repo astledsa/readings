@@ -95,6 +95,7 @@
     <h2 id="Blogs" style="text-align: center;">Blogs</h2>
     <h2 id="Mangas" style="text-align: center;">Mangas</h2>
     <h2 id="BooksNFiction" style="text-align: center;">Books [Fiction]</h2>
+    <h2 id="Papers" style="text-align: center;">Research Papers</h2>
   </main>
 </body>
 
@@ -104,6 +105,8 @@
   let mainBooksNF = document.getElementById('BooksNFiction');
   let Blogs = document.getElementById('Blogs');
   let Mangas = document.getElementById('Mangas');
+  let R_papers = document.getElementById('Papers');
+  
   let books = {
     "linear Algebra": "https://math.mit.edu/~gs/linearalgebra/",
     "Sapiens": "https://www.ynharari.com/book/sapiens-2/",
@@ -221,6 +224,22 @@
     "React from Scratch": "https://pomb.us/build-your-own-react/"
   };
 
+  let papers = {
+    "Attention is all you need": "https://arxiv.org/abs/1706.03762",
+    "Mamba": "https://arxiv.org/abs/2312.00752",
+    "Bitcoin": "https://bitcoin.org/bitcoin.pdf",
+    "Fluid Dynamics": "http://graphics.cs.cmu.edu/nsp/course/15-464/Fall09/papers/StamFluidforGames.pdf",
+    "Griffin Architecture": "https://arxiv.org/abs/2404.07839",
+    "S4 Models": "https://arxiv.org/abs/2111.00396",
+    "Neural Ordinary Differential Equations": "https://arxiv.org/abs/1806.07366",
+    "AI and Knowledge collapse": "https://arxiv.org/abs/2404.03502",
+    "Inifite Attention": "https://arxiv.org/abs/2404.07143",
+    "1-bit LLMs": "https://arxiv.org/abs/2402.17764",
+    "More is Different": "https://www.tkm.kit.edu/downloads/TKM1_2011_more_is_different_PWA.pdf",
+    "Jailbreaking LLMs with Adaptive attacks": "https://arxiv.org/abs/2404.02151",
+    "Formal thoery for Self and Consciousness": "https://ia800207.us.archive.org/0/items/a-formal-theory-of-self-and-consciousness-in-simulated-realities/A%20Formal%20Theory%20of%20Self%20and%20Consciousness%20in%20Simulated%20Realities.pdf"
+  }
+
   function populate (mainHeader, listDict) {
     let container = document.createElement('p');
 
@@ -273,7 +292,8 @@
   populate(mainBooks, books);
   populate(mainBooksNF, booksNonFIc);
   populate(Blogs, blogs);
-  populate(Mangas, mangas)
+  populate(Mangas, mangas);
+  populate(R_papers, papers);
 
 </script>
 </html>
