@@ -96,6 +96,7 @@ p<!DOCTYPE html>
     <h2 id="Mangas" style="text-align: center;">Mangas</h2>
     <h2 id="BooksNFiction" style="text-align: center;">Books [Fiction]</h2>
     <h2 id="Papers" style="text-align: center;">Research Papers</h2>
+    <h2 id="ToRead" style="text-align: center;">Reading List</h2>
   </main>
 </body>
 
@@ -106,6 +107,7 @@ p<!DOCTYPE html>
   let Blogs = document.getElementById('Blogs');
   let Mangas = document.getElementById('Mangas');
   let R_papers = document.getElementById('Papers');
+  let todo = document.getElementById('ToRead');
   
   let books = {
     "linear Algebra": "https://math.mit.edu/~gs/linearalgebra/",
@@ -306,7 +308,14 @@ p<!DOCTYPE html>
 "Softmax Linear Units": "https://transformer-circuits.pub/2022/solu/index.html",
 "The Neural Casual framework": "https://arxiv.org/abs/2107.00793",
 "Infini-gram Language Models": "https://arxiv.org/abs/2401.17377"
-  }
+}
+
+let readingList = {
+  "Proof Theory": "https://www.google.com/search?q=an+introduction+to+proof+theory+Buss&sourceid=chrome&ie=UTF-8",
+  "C.elegans Locomotion": "https://etheses.whiterose.ac.uk/1377/1/jboyle.pdf",
+  "A Survey of Prompts": "https://arxiv.org/abs/2406.06608",
+  "Diffusion": "https://arxiv.org/pdf/2406.08929"
+}
 
   function populate (mainHeader, listDict) {
     let container = document.createElement('p');
@@ -362,6 +371,7 @@ p<!DOCTYPE html>
   populate(Blogs, blogs);
   populate(Mangas, mangas);
   populate(R_papers, papers);
+  populate(todo, readingList);
 
 </script>
 </html>
