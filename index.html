@@ -97,6 +97,7 @@
     <h2 id="BooksNFiction" style="text-align: center;">Books [Fiction]</h2>
     <h2 id="Papers" style="text-align: center;">Research Papers</h2>
     <h2 id="ToRead" style="text-align: center;">Reading List</h2>
+    <h2 id="Tweets" style="text-align: center;">Tweets</h2>
   </main>
 </body>
 
@@ -108,6 +109,7 @@
   let Mangas = document.getElementById('Mangas');
   let R_papers = document.getElementById('Papers');
   let todo = document.getElementById('ToRead');
+  let Tweet = document.getElementById('Tweets');
   
   let books = {
     "linear Algebra": "https://math.mit.edu/~gs/linearalgebra/",
@@ -386,6 +388,10 @@
     "Grokking as a transition from lazy to rich training dynamics": "https://arxiv.org/abs/2310.06110"
 }
 
+  let tweetlist = {
+    "Math and genetics": "https://x.com/davidbessis/status/1816459931995840984?t=dSwrPzta2yNyitatV3H76w&s=19"
+  }
+
 
 
 let readingList = {
@@ -456,6 +462,7 @@ let readingList = {
   populate(Mangas, mangas);
   populate(R_papers, papers);
   populate(todo, readingList);
+  populate(Tweet, tweetlist);
 
 </script>
 </html>
