@@ -91,10 +91,10 @@
     why not. Hopefully this list continues to grow!
   </p>
   <main>
-    <h2 id="BooksFiction" style="text-align: center;">Books</h2>
-    <h2 id="Blogs" style="text-align: center;">Blogs</h2>
-    <h2 id="Papers" style="text-align: center;">Research Papers</h2>
-    <h2 id="Tweets" style="text-align: center;">Tweets</h2>
+    <h2 id="BooksFiction" style="text-align: center;">Books (0)</h2>
+    <h2 id="Blogs" style="text-align: center;">Blogs (0)</h2>
+    <h2 id="Papers" style="text-align: center;">Research Papers (0)</h2>
+    <h2 id="Tweets" style="text-align: center;">Tweets (0)</h2>
   </main>
 </body>
 
@@ -390,7 +390,8 @@
     "Megatron-LM": "https://arxiv.org/abs/1909.08053",
     "The Geometry of Categorical and Hierarchical Concepts in Large Language Models": "https://arxiv.org/html/2406.01506v1#:~:text=We%20find%20a%20remarkably%20simple,simplices%2C%20reflecting%20the%20hierarchical%20structure.",
 "Pitfalls of next token prediction": "https://arxiv.org/abs/2403.06963",
-"Sequential neural networks as Automata": "https://arxiv.org/abs/1906.01615"
+"Sequential neural networks as Automata": "https://arxiv.org/abs/1906.01615",
+    "Introduction to Reinforcement Learning": "https://arxiv.org/abs/2408.07712"
 }
 
   let tweetlist = {
@@ -436,6 +437,17 @@
       decorater.classList.add('decorator');
       container.appendChild(name);
       container.appendChild(decorater);
+    }
+
+    const currentText = mainHeader.innerText;
+    const match = currentText.match(/(\w+) \((\d+)\)/);
+
+    if (match) {
+      const content = match[1];
+      const count = Object.keys(listDict).length;
+      mainHeader.innerText = `${content} (${count})`;
+    } else {
+      console.error("Could not find a matching pattern in the h2 element.");
     }
 
     mainHeader.appendChild(container);
