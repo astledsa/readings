@@ -71,10 +71,64 @@
     text-decoration: underline;
     opacity: 1;
   }
+  .search-highlight {
+    color: red !important;
+  }
+  .searchdropdown {
+    display: none;
+    position: absolute;
+    top: 35%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 1000;
+  }
+  .searchContainer {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 4vh;
+    text-align: center;
+    margin-top: 50px;
+  }
+  input, #search-dropdown, #search-results {
+    font-family: "Grenze Gotisch", serif;
+    background-color: rgb(255, 255, 255);
+    user-select: none;
+  }
+  input:focus, #search-dropdown:focus {
+    outline: none;
+  }
+  input {
+    border: 1px solid black;
+    padding: 0.5%;
+    width: 38%;
+    height: 100%;
+  }
+  #search-dropdown {
+    padding: 0.5%;
+    width: 38%;
+  }
   @media only screen and (max-width: 768px) {
     main, p, .p-list {
       margin: 1em;
       width: auto;
+    }
+
+    input {
+      border: 1px solid black;
+      padding: 0.5%;
+      width: 75%;
+      height: 100%;
+    }
+    
+    #search-dropdown {
+      padding: 0.5%;
+      width: 75%;
+    }
+    .searchdropdown {
+      top: 44.5%;
     }
   }
   
@@ -90,6 +144,19 @@
     no framework or library, just a single file of artistry. Anyways, below is a list of things I've read over the years cause
     why not. Hopefully this list continues to grow!
   </p>
+  <div id="search-container" class="searchContainer">
+    <!-- <select id="category-select">
+      <option value="all">All</option>
+      <option value="books">Books</option>
+      <option value="blogs">Blogs</option>
+      <option value="papers">Papers</option>
+      <option value="tweets">Tweets</option>
+    </select> -->
+    <input type="text" id="search-input" placeholder="Search...">
+    <!-- <button onclick="performSearch()">Search</button> -->
+    <div id="search-dropdown" class="searchdropdown"></div>
+  </div>
+  <div id="search-results" style="margin-top: 20px;"></div>
   <main>
     <h2 id="BooksFiction" style="text-align: center;">Books (0)</h2>
     <h2 id="Blogs" style="text-align: center;">Blogs (0)</h2>
@@ -537,5 +604,125 @@
   populate(R_papers, papers);
   populate(Tweet, tweetlist);
 
+  function performSearch() {
+  const searchTerm = document.getElementById('search-input').value.toLowerCase();
+  // const category = document.getElementById('category-select').value;
+  const resultsContainer = document.getElementById('search-results');
+  resultsContainer.innerHTML = '';
+
+  let searchResults = getSearchResults(searchTerm);
+
+  if (searchResults.length === 0) {
+    resultsContainer.innerHTML = '<p>No results found.</p>';
+  } else if (searchResults.length === 1) {
+    const [key, value] = searchResults[0];
+    navigateAndHighlight(key, value);
+  } else {
+    displaySearchResults(searchResults);
+  }
+}
+
+function getSearchResults(searchTerm) {
+  let searchResults = [];
+
+  function searchInCategory(dict) {
+    return Object.entries(dict).filter(([key, value]) => 
+      key.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  searchResults = searchResults.concat(searchInCategory(books));
+  searchResults = searchResults.concat(searchInCategory(blogs));
+  searchResults = searchResults.concat(searchInCategory(papers));
+  searchResults = searchResults.concat(searchInCategory(tweetlist));
+
+  return searchResults;
+}
+
+function displaySearchResults(results) {
+  const resultsContainer = document.getElementById('search-results');
+  const resultsList = document.createElement('ul');
+  results.forEach(([key, value]) => {
+    const listItem = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = '#';
+    link.textContent = key;
+    link.onclick = (e) => {
+      e.preventDefault();
+      navigateAndHighlight(key, value);
+    };
+    listItem.appendChild(link);
+    resultsList.appendChild(listItem);
+  });
+  resultsContainer.appendChild(resultsList);
+}
+
+function navigateAndHighlight(key, value) {
+  const existingHighlights = document.querySelectorAll('.search-highlight');
+  existingHighlights.forEach(el => {
+    el.classList.remove('search-highlight');
+  });
+
+  const links = document.querySelectorAll('a');
+  for (let link of links) {
+    if (link.textContent === key) {
+      link.classList.add('search-highlight');
+      link.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      break;
+    }
+  }
+}
+
+function updateDropdown() {
+  const searchTerm = document.getElementById('search-input').value.toLowerCase();
+  // const category = document.getElementById('category-select').value;
+  const dropdown = document.getElementById('search-dropdown');
+
+  if (searchTerm.length < 2) {
+    dropdown.style.display = 'none';
+    return;
+  }
+
+  const searchResults = getSearchResults(searchTerm);
+
+  if (searchResults.length === 0) {
+    dropdown.style.display = 'none';
+    return;
+  }
+
+  dropdown.innerHTML = '';
+  searchResults.forEach(([key, value]) => {
+    const option = document.createElement('div');
+    option.textContent = key;
+    option.style.padding = '5px';
+    option.style.cursor = 'pointer';
+    option.onmouseover = () => { option.style.backgroundColor = '#f0f0f0'; };
+    option.onmouseout = () => { option.style.backgroundColor = 'white'; };
+    option.onclick = () => {
+      document.getElementById('search-input').value = key;
+      dropdown.style.display = 'none';
+      navigateAndHighlight(key, value);
+    };
+    dropdown.appendChild(option);
+  });
+
+  dropdown.style.display = 'block';
+}
+
+// Event listeners
+document.getElementById('search-input').addEventListener('input', updateDropdown);
+document.getElementById('search-input').addEventListener('keypress', function(event) {
+  if (event.key === 'Enter') {
+    performSearch();
+  }
+});
+// document.getElementById('category-select').addEventListener('change', updateDropdown);
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  if (!event.target.closest('#search-container')) {
+    document.getElementById('search-dropdown').style.display = 'none';
+  }
+});
 </script>
 </html>
