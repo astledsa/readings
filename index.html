@@ -77,21 +77,22 @@
   .searchdropdown {
     display: none;
     position: absolute;
-    top: 35%;
     max-height: 200px;
     overflow-y: auto;
     background-color: white;
     z-index: 1000;
   }
   .searchContainer {
-    display: flex;
     justify-content: center;
-    flex-direction: column;
+    display: flex;
     align-items: center;
-    height: 4vh;
+    flex-direction: column;
     text-align: center;
+    height: 4vh;
+    position: relative; /* Add this */
     margin-top: 50px;
-  }
+    width: 100%; /* Add this */
+}
   input, #search-dropdown, #search-results {
     font-family: "Grenze Gotisch", serif;
     background-color: rgb(255, 255, 255);
@@ -101,14 +102,23 @@
     outline: none;
   }
   input {
-    border: 1px solid black;
+    border: 1px solid grey;
     padding: 0.5%;
     width: 38%;
     height: 100%;
   }
   #search-dropdown {
-    padding: 0.5%;
-    width: 38%;
+    position: absolute;
+    top: 100%; /* Position it right below the search input */
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%); /* Ensure it's centered */
+    width: 38%; /* Match the width of the input */
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   @media only screen and (max-width: 768px) {
     main, p, .p-list {
@@ -118,17 +128,14 @@
 
     input {
       border: 1px solid black;
-      padding: 0.5%;
+      padding: 1%;
       width: 75%;
       height: 100%;
     }
     
     #search-dropdown {
-      padding: 0.5%;
+      /* padding: 0.5%; */
       width: 75%;
-    }
-    .searchdropdown {
-      top: 44.5%;
     }
   }
   
@@ -145,18 +152,9 @@
     why not. Hopefully this list continues to grow!
   </p>
   <div id="search-container" class="searchContainer">
-    <!-- <select id="category-select">
-      <option value="all">All</option>
-      <option value="books">Books</option>
-      <option value="blogs">Blogs</option>
-      <option value="papers">Papers</option>
-      <option value="tweets">Tweets</option>
-    </select> -->
     <input type="text" id="search-input" placeholder="Search...">
-    <!-- <button onclick="performSearch()">Search</button> -->
-    <div id="search-dropdown" class="searchdropdown"></div>
+    <div id="search-dropdown"></div>
   </div>
-  <div id="search-results" style="margin-top: 20px;"></div>
   <main>
     <h2 id="BooksFiction" style="text-align: center;">Books (0)</h2>
     <h2 id="Blogs" style="text-align: center;">Blogs (0)</h2>
@@ -675,8 +673,8 @@ function navigateAndHighlight(key, value) {
 
 function updateDropdown() {
   const searchTerm = document.getElementById('search-input').value.toLowerCase();
-  // const category = document.getElementById('category-select').value;
   const dropdown = document.getElementById('search-dropdown');
+  const searchInput = document.getElementById('search-input');
 
   if (searchTerm.length < 2) {
     dropdown.style.display = 'none';
@@ -694,12 +692,13 @@ function updateDropdown() {
   searchResults.forEach(([key, value]) => {
     const option = document.createElement('div');
     option.textContent = key;
-    option.style.padding = '5px';
+    option.style.padding = '10px';
     option.style.cursor = 'pointer';
+    option.style.borderBottom = '1px solid #eee';
     option.onmouseover = () => { option.style.backgroundColor = '#f0f0f0'; };
     option.onmouseout = () => { option.style.backgroundColor = 'white'; };
     option.onclick = () => {
-      document.getElementById('search-input').value = key;
+      searchInput.value = key;
       dropdown.style.display = 'none';
       navigateAndHighlight(key, value);
     };
@@ -707,6 +706,9 @@ function updateDropdown() {
   });
 
   dropdown.style.display = 'block';
+  
+  // Adjust dropdown width to match input width
+  dropdown.style.width = searchInput.offsetWidth + 'px';
 }
 
 // Event listeners
@@ -722,6 +724,14 @@ document.getElementById('search-input').addEventListener('keypress', function(ev
 document.addEventListener('click', function(event) {
   if (!event.target.closest('#search-container')) {
     document.getElementById('search-dropdown').style.display = 'none';
+  }
+});
+
+window.addEventListener('resize', function() {
+  const searchInput = document.getElementById('search-input');
+  const dropdown = document.getElementById('search-dropdown');
+  if (dropdown.style.display !== 'none') {
+    dropdown.style.width = searchInput.offsetWidth + 'px';
   }
 });
 </script>
