@@ -156,6 +156,7 @@
     <div id="search-dropdown"></div>
   </div>
   <main>
+    <h2 id="Personal" style="text-align: center;">Personal (0)</h2>
     <h2 id="BooksFiction" style="text-align: center;">Books (0)</h2>
     <h2 id="Blogs" style="text-align: center;">Blogs (0)</h2>
     <h2 id="Papers" style="text-align: center;">Research Papers (0)</h2>
@@ -172,6 +173,44 @@
   let R_papers = document.getElementById('Papers');
   let todo = document.getElementById('ToRead');
   let Tweet = document.getElementById('Tweets');
+  let Personal = document.getElementById('Personal');
+
+  let personalwriteups = {
+    "A parable on Types": "https://streams.place/astleshome/drops/322210402756894720",
+    "On the Nature of computing": "https://streams.place/astleshome/drops/314255291178983424",
+    "Moments I felt the AI": "https://streams.place/astleshome/drops/291954235749343232",
+    "Types of codebases/software": "https://streams.place/astleshome/drops/289155033537355776",
+    "Through the lens of now: how presentism shapes language models": "https://streams.place/astleshome/drops/288973112748449792",
+    "Software Design": "https://streams.place/astleshome/drops/285868049800798208",
+    "Reading levels": "https://streams.place/astleshome/drops/275686728545771520",
+    "The computational complexity paradigm of ML": "https://streams.place/astleshome/drops/237276601426026496",
+    "Doctrine's don't scale": "https://streams.place/astleshome/drops/232734677386043392",
+    "Unfeeling emotions": "https://streams.place/astleshome/drops/232657402317676544",
+    "Alternatives to religious dostrine: Why to live": "https://streams.place/astleshome/drops/231518055950360576",
+    "The spiritual mutiny to intellectual subsistence": "https://streams.place/astleshome/drops/220979421715275776",
+    "Language Entropy": "https://streams.place/astleshome/drops/212177386811334656",
+    "High(er) Dimensions": "https://streams.place/astleshome/drops/204686196335616000",
+    "Judicial and Political Correctness": "https://streams.place/astleshome/drops/192657027657539584",
+    "AI and God-man": "https://streams.place/astleshome/drops/190354777509634048",
+    "Automatic Differentiation": "https://mathblog.vercel.app/blog/autograd/",
+    "Automatic Differentiation - II": "https://mathblog.vercel.app/blog/autograd2/",
+    "Neural Networks with Linear Algebra": "https://mathblog.vercel.app/blog/nnla/",
+    "Neural Networks with Linear Algebra - II": "https://mathblog.vercel.app/blog/nnla2/",
+    "Word-to-vec Embeddings": "https://mathblog.vercel.app/blog/wtov/",
+    "Word-to-vec Embeddings": "https://mathblog.vercel.app/blog/wtov2/",
+    "Exploring Architectures - CNN": "https://mathblog.vercel.app/blog/cnn/",
+    "Exploring Architectures - CNN II": "": "https://mathblog.vercel.app/blog/cnn2/",
+    "Exploring Architectures - RNN": "": "https://mathblog.vercel.app/blog/rnn/",
+    "Exploring Architectures - LSTMs": "https://mathblog.vercel.app/blog/lstm/",
+    "Exploring Architectures - Transformers": "https://mathblog.vercel.app/blog/transformers/",
+    "Exploring Architectures - Transformers II": "https://mathblog.vercel.app/blog/transformers2/",
+    "Neural Ordinary Differential Equations": "https://mathblog.vercel.app/blog/node/",
+    "A brief view on AI": "https://dev-nq.vercel.app/blogs/1/",
+    "AI/UX: how to use LLMs": "https://dev-nq.vercel.app/blogs/2/",
+    "Universal Approximation Theorem": "https://dev-nq.vercel.app/blogs/3/",
+    "Deep Learning in C": "https://dev-nq.vercel.app/projects/3/",
+    "The Art of Storytelling": "https://open.substack.com/pub/astledsa/p/the-art-of-story-telling?r=36htuo&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true"
+  }
   
   let books = {
     "linear Algebra": "https://math.mit.edu/~gs/linearalgebra/",
@@ -787,6 +826,7 @@
     noLoop(); 
   }
 
+  populate(Personal, personalwriteups);
   populate(mainBooks, books);
   populate(Blogs, blogs);
   populate(R_papers, papers);
@@ -819,6 +859,7 @@ function getSearchResults(searchTerm) {
     );
   }
 
+  searchResults = searchResults.concat(searchInCategory(personalwriteups));
   searchResults = searchResults.concat(searchInCategory(books));
   searchResults = searchResults.concat(searchInCategory(blogs));
   searchResults = searchResults.concat(searchInCategory(papers));
