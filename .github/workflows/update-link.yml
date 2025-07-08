@@ -23,28 +23,44 @@ jobs:
         run: |
           CATEGORY=$(echo "${{ github.event.inputs.category }}" | tr '[:upper:]' '[:lower:]')
           FILE="index.html"
-          
+
           # Choose JS variable based on category
           case "$CATEGORY" in
             blog)     VAR_NAME="blogs" ;;
             tweet)    VAR_NAME="Tweet" ;;
             book)     VAR_NAME="books" ;;
-            paper)    VAR_NAME="R_papers" ;;  # optional: add real paper section
+            paper)    VAR_NAME="R_papers" ;;
             personal) VAR_NAME="personalwriteups" ;;
             *) echo "Unknown category: $CATEGORY" && exit 1 ;;
           esac
 
           # Escape title and URL
           TITLE=$(echo "${{ github.event.inputs.title }}" | sed 's/"/\\"/g')
-          URL=$(echo "${{ github.event.inputs.url }}" | sed 's/\//\\\//g')
+          URL=$(echo "${{ github.event.inputs.url }}" | sed 's/"/\\"/g')
 
-          # Insert before closing curly bracket of the correct JS object
-          sed -i "/let $VAR_NAME *= *{/,/}/ s/}/  \"$TITLE\": \"$URL\",\n}/" "$FILE"
+          echo "Appending \"$TITLE\": \"$URL\" to object $VAR_NAME"
+
+          # Use Perl to safely insert before closing }
+          perl -0777 -i -pe "s/(let\s+$VAR_NAME\s*=\s*{)(.*?)(\n})/\$1\$2\${2:+,}\n  \\\"$TITLE\\\": \\\"$URL\\\"\$3/s" "$FILE"
 
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "bot@users.noreply.github.com"
           git add index.html
+
+          # Check if there is anything to commit
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
           git commit -m "Add ${{ github.event.inputs.title }} to ${{ github.event.inputs.category }}"
-          git push
+
+      - name: Push changes
+        env:
+          TOKEN: ${{ secrets.PUSH_TOKEN }}
+        run: |
+          # Use PAT to authenticate if needed
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/astledsa/readings.git
+          git push origin main
