@@ -27,7 +27,6 @@ jobs:
   update-file:
     runs-on: ubuntu-latest
     permissions:
-      # Required to checkout the code
       contents: write 
     steps:
       - name: Checkout repository
@@ -54,25 +53,25 @@ jobs:
           echo "Marker: $MARKER"
 
           # 2. Escape quotes in title and URL for safe insertion
-          # This handles double quotes inside the title or URL string.
           TITLE_ESC=$(echo "$TITLE" | sed 's/"/\\"/g')
           URL_ESC=$(echo "$URL" | sed 's/"/\\"/g')
 
-          # 3. Prepare the new line to be inserted
-          # Format: "title": "url",
-          NEW_LINE="      \"${TITLE_ESC}\": \"${URL_ESC}\","
+          # 3. Prepare the new line to be inserted, WITH a trailing comma.
+          # The indentation (4 spaces) is included for nice formatting.
+          NEW_LINE="    \"${TITLE_ESC}\": \"${URL_ESC}\","
 
-          # 4. Use sed to find the marker and insert the new line before it
-          # The `|` is used as a delimiter to avoid conflicts with slashes in the URL.
-          # We insert the new content, a newline (`\n`), and then keep the marker for the next run.
-          sed -i "s|${MARKER}|${NEW_LINE}\n${MARKER}|" "$FILE"
+          # 4. Use sed to find the marker and insert the new line AFTER it.
+          # This robustly handles the comma issue for both empty and non-empty objects.
+          # The `|` is used as a delimiter to avoid conflicts with slashes.
+          sed -i "s|${MARKER}|${MARKER}\n${NEW_LINE}|" "$FILE"
 
           echo "Successfully appended '$TITLE' to the '$CATEGORY' section in $FILE."
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "feat(${A{ github.event.inputs.category }}): Add '${{ github.event.inputs.title }}'"
+          # Note: Fixed a typo here from your original post (`${A{...` -> `${{...`)
+          commit_message: "feat(${{ github.event.inputs.category }}): Add '${{ github.event.inputs.title }}'"
           file_pattern: index.html
           commit_user_name: github-actions[bot]
           commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
