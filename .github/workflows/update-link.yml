@@ -36,11 +36,14 @@ jobs:
             *) echo "Unknown category: $CATEGORY" && exit 1 ;;
           esac
 
-          TITLE=$(echo "${{ github.event.inputs.title }}" | sed 's/"/\\"/g')
-          URL=$(echo "${{ github.event.inputs.url }}" | sed 's/"/\\"/g')
+          # Escape title and URL safely
+          TITLE_ESC=$(printf "%s" "${{ github.event.inputs.title }}" | sed 's/"/\\"/g')
+          URL_ESC=$(printf "%s" "${{ github.event.inputs.url }}" | sed 's/"/\\"/g')
+          NEW_ENTRY="  \"$TITLE_ESC\": \"$URL_ESC\""
 
-          echo "Appending \"$TITLE\": \"$URL\" to object $VAR_NAME"
+          echo "Appending: $NEW_ENTRY to object $VAR_NAME"
 
+          # Perl-based JS object insertion
           perl -0777 -i -pe "
             s/
               (let\s+$VAR_NAME\s*=\s*{)      # match opening
@@ -50,12 +53,12 @@ jobs:
               my \$head = \$1;
               my \$body = \$2;
               my \$tail = \$3;
-              my \$new = \"  \\\"$TITLE\\\": \\\"$URL\\\"\";
+              my \$new = \"$NEW_ENTRY\";
               \$body =~ s/\s+\z//;
               \$body = \$body ? \"\$body,\\n\$new\" : \"\$new\";
               \"\$head\$body\$tail\";
             /sex
-          " "$FILE"
+          " \"$FILE\"
 
       - name: Commit changes
         run: |
