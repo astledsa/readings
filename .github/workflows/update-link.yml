@@ -1,100 +1,78 @@
+# .github/workflows/add-resource.yml
 name: Add new resource
 
 on:
   workflow_dispatch:
     inputs:
       category:
-        description: "Category (book, blog, tweet, paper, personal)"
+        description: "Category of the resource"
         required: true
-        type: string
+        type: choice
+        options:
+          - book
+          - blog
+          - tweet
+          - paper
+          - personal
       title:
-        description: "Title of the item"
+        description: "Title of the resource"
         required: true
         type: string
       url:
-        description: "URL of the item"
+        description: "URL of the resource"
         required: true
         type: string
 
 jobs:
   update-file:
     runs-on: ubuntu-latest
+    permissions:
+      # Required to checkout the code
+      contents: write 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Append to correct JS object
+      - name: Update data file
         env:
           TITLE: ${{ github.event.inputs.title }}
           URL: ${{ github.event.inputs.url }}
           CATEGORY: ${{ github.event.inputs.category }}
         run: |
+          # 1. Define the target file and map category to a placeholder marker
           FILE="index.html"
-
-          case "${CATEGORY,,}" in
-            blog) VAR_NAME="blogs" ;;
-            tweet) VAR_NAME="Tweet" ;;
-            book) VAR_NAME="books" ;;
-            paper) VAR_NAME="R_papers" ;;
-            personal) VAR_NAME="personalwriteups" ;;
-            *) echo "Unknown category: $CATEGORY" && exit 1 ;;
+          case "$CATEGORY" in
+            blog)     MARKER="// APPEND_BLOGS_HERE" ;;
+            tweet)    MARKER="// APPEND_TWEETS_HERE" ;;
+            book)     MARKER="// APPEND_BOOKS_HERE" ;;
+            paper)    MARKER="// APPEND_PAPERS_HERE" ;;
+            personal) MARKER="// APPEND_PERSONAL_HERE" ;;
+            *)        echo "Error: Unknown category '$CATEGORY'" && exit 1 ;;
           esac
+          
+          echo "Category: $CATEGORY"
+          echo "Marker: $MARKER"
 
-          # Escape title and URL
-          TITLE_ESC=$(printf "%s" "$TITLE" | sed 's/"/\\"/g')
-          URL_ESC=$(printf "%s" "$URL" | sed 's/"/\\"/g')
+          # 2. Escape quotes in title and URL for safe insertion
+          # This handles double quotes inside the title or URL string.
+          TITLE_ESC=$(echo "$TITLE" | sed 's/"/\\"/g')
+          URL_ESC=$(echo "$URL" | sed 's/"/\\"/g')
 
-          echo "Appending: \"$TITLE_ESC\": \"$URL_ESC\" to $VAR_NAME"
+          # 3. Prepare the new line to be inserted
+          # Format: "title": "url",
+          NEW_LINE="      \"${TITLE_ESC}\": \"${URL_ESC}\","
 
-          echo '
-            use strict;
-            use warnings;
+          # 4. Use sed to find the marker and insert the new line before it
+          # The `|` is used as a delimiter to avoid conflicts with slashes in the URL.
+          # We insert the new content, a newline (`\n`), and then keep the marker for the next run.
+          sed -i "s|${MARKER}|${NEW_LINE}\n${MARKER}|" "$FILE"
 
-            my $var_name = $ENV{"VAR_NAME"};
-            my $file = $ENV{"FILE"};
-            my $title = $ENV{"TITLE_ESC"};
-            my $url = $ENV{"URL_ESC"};
+          echo "Successfully appended '$TITLE' to the '$CATEGORY' section in $FILE."
 
-            my $new_line = qq{  "$title": "$url"};
-
-            local $/ = undef;
-            open my $fh, "<", $file or die "Cannot read $file: $!";
-            my $content = <$fh>;
-            close $fh;
-
-            $content =~ s/
-              (let\s+\Q$var_name\E\s*=\s*{)      # opening
-              (.*?)                              # body
-              (\n\s*})                           # closing
-            /
-              my ($head, $body, $tail) = ($1, $2, $3);
-              $body =~ s/\s+\z//;
-              $body = $body ? "$body,\n$new_line" : $new_line;
-              "$head$body$tail";
-            /sex;
-
-            open my $out, ">", $file or die "Cannot write $file: $!";
-            print $out $content;
-            close $out;
-          ' > update.pl
-
-          VAR_NAME=$VAR_NAME FILE=$FILE TITLE_ESC="$TITLE_ESC" URL_ESC="$URL_ESC" perl update.pl
-
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "bot@users.noreply.github.com"
-          git add index.html
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-
-          git commit -m "Add ${{ github.event.inputs.title }} to ${{ github.event.inputs.category }}"
-
-      - name: Push changes
-        env:
-          TOKEN: ${{ secrets.PUSH_TOKEN }}
-        run: |
-          git remote set-url origin https://x-access-token:${TOKEN}@github.com/astledsa/readings.git
-          git push origin main
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "feat(${A{ github.event.inputs.category }}): Add '${{ github.event.inputs.title }}'"
+          file_pattern: index.html
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
