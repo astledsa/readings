@@ -39,30 +39,45 @@ jobs:
             *) echo "Unknown category: $CATEGORY" && exit 1 ;;
           esac
 
-          # Escape title and URL for JS
+          # Escape title and URL
           TITLE_ESC=$(printf "%s" "$TITLE" | sed 's/"/\\"/g')
           URL_ESC=$(printf "%s" "$URL" | sed 's/"/\\"/g')
-          export VAR_NAME
-          export NEW_ENTRY="  \"$TITLE_ESC\": \"$URL_ESC\""
 
-          echo "Appending: $NEW_ENTRY to object $VAR_NAME"
+          echo "Appending: \"$TITLE_ESC\": \"$URL_ESC\" to $VAR_NAME"
 
-          perl -0777 -i -pe '
-            my $var = $ENV{VAR_NAME};
-            my $new = $ENV{NEW_ENTRY};
-            s/
-              (let\s+\Q$var\E\s*=\s*{)      # match start
-              (.*?)                         # body
-              (\n\s*})                      # end
+          echo '
+            use strict;
+            use warnings;
+
+            my $var_name = $ENV{"VAR_NAME"};
+            my $file = $ENV{"FILE"};
+            my $title = $ENV{"TITLE_ESC"};
+            my $url = $ENV{"URL_ESC"};
+
+            my $new_line = qq{  "$title": "$url"};
+
+            local $/ = undef;
+            open my $fh, "<", $file or die "Cannot read $file: $!";
+            my $content = <$fh>;
+            close $fh;
+
+            $content =~ s/
+              (let\s+\Q$var_name\E\s*=\s*{)      # opening
+              (.*?)                              # body
+              (\n\s*})                           # closing
             /
-              my $head = $1;
-              my $body = $2;
-              my $tail = $3;
-              $body =~ s/\\s+\\z//;
-              $body = $body ? "$body,\n$new" : "$new";
+              my ($head, $body, $tail) = ($1, $2, $3);
+              $body =~ s/\s+\z//;
+              $body = $body ? "$body,\n$new_line" : $new_line;
               "$head$body$tail";
-            /sex
-          ' "$FILE"
+            /sex;
+
+            open my $out, ">", $file or die "Cannot write $file: $!";
+            print $out $content;
+            close $out;
+          ' > update.pl
+
+          VAR_NAME=$VAR_NAME FILE=$FILE TITLE_ESC="$TITLE_ESC" URL_ESC="$URL_ESC" perl update.pl
 
       - name: Commit changes
         run: |
