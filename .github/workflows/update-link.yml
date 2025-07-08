@@ -26,11 +26,11 @@ jobs:
         env:
           TITLE: ${{ github.event.inputs.title }}
           URL: ${{ github.event.inputs.url }}
+          CATEGORY: ${{ github.event.inputs.category }}
         run: |
-          CATEGORY=$(echo "${{ github.event.inputs.category }}" | tr '[:upper:]' '[:lower:]')
           FILE="index.html"
 
-          case "$CATEGORY" in
+          case "${CATEGORY,,}" in
             blog) VAR_NAME="blogs" ;;
             tweet) VAR_NAME="Tweet" ;;
             book) VAR_NAME="books" ;;
@@ -39,24 +39,26 @@ jobs:
             *) echo "Unknown category: $CATEGORY" && exit 1 ;;
           esac
 
-          # Escape for JS
+          # Escape title and URL for JS
           TITLE_ESC=$(printf "%s" "$TITLE" | sed 's/"/\\"/g')
           URL_ESC=$(printf "%s" "$URL" | sed 's/"/\\"/g')
-
+          export VAR_NAME
           export NEW_ENTRY="  \"$TITLE_ESC\": \"$URL_ESC\""
+
           echo "Appending: $NEW_ENTRY to object $VAR_NAME"
 
           perl -0777 -i -pe '
+            my $var = $ENV{VAR_NAME};
+            my $new = $ENV{NEW_ENTRY};
             s/
-              (let\s+$ENV{VAR_NAME}\s*=\s*{)  # match object start
-              (.*?)                           # capture contents
-              (\n\s*})                        # match closing
+              (let\s+\Q$var\E\s*=\s*{)      # match start
+              (.*?)                         # body
+              (\n\s*})                      # end
             /
               my $head = $1;
               my $body = $2;
               my $tail = $3;
-              my $new = $ENV{NEW_ENTRY};
-              $body =~ s/\s+\z//;
+              $body =~ s/\\s+\\z//;
               $body = $body ? "$body,\n$new" : "$new";
               "$head$body$tail";
             /sex
