@@ -27,7 +27,7 @@ jobs:
   update-file:
     runs-on: ubuntu-latest
     permissions:
-      contents: write 
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,11 +41,11 @@ jobs:
           # 1. Define the target file and map category to a placeholder marker
           FILE="index.html"
           case "$CATEGORY" in
-            blog)     MARKER="// APPEND_BLOGS_HERE" ;;
-            tweet)    MARKER="// APPEND_TWEETS_HERE" ;;
-            book)     MARKER="// APPEND_BOOKS_HERE" ;;
-            paper)    MARKER="// APPEND_PAPERS_HERE" ;;
-            personal) MARKER="// APPEND_PERSONAL_HERE" ;;
+            blog)     MARKER="let blogs = {" ;; # Match the opening brace
+            tweet)    MARKER="let tweets = {" ;; # Match the opening brace
+            book)     MARKER="let books = {" ;;  # Match the opening brace
+            paper)    MARKER="let papers = {" ;; # Match the opening brace
+            personal) MARKER="let personal = {" ;; # Match the opening brace
             *)        echo "Error: Unknown category '$CATEGORY'" && exit 1 ;;
           esac
           
@@ -60,17 +60,16 @@ jobs:
           # The indentation (4 spaces) is included for nice formatting.
           NEW_LINE="    \"${TITLE_ESC}\": \"${URL_ESC}\","
 
-          # 4. Use sed to find the marker and insert the new line AFTER it.
-          # This robustly handles the comma issue for both empty and non-empty objects.
-          # The `|` is used as a delimiter to avoid conflicts with slashes.
-          sed -i "s|${MARKER}|${MARKER}\n${NEW_LINE}|" "$FILE"
+          # 4. Use sed to find the marker (the opening brace) and insert the new line AFTER it.
+          # The 'a' command in sed appends text after the matched line.
+          sed -i "/${MARKER}/a\\
+${NEW_LINE}" "$FILE"
 
           echo "Successfully appended '$TITLE' to the '$CATEGORY' section in $FILE."
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          # Note: Fixed a typo here from your original post (`${A{...` -> `${{...`)
           commit_message: "feat(${{ github.event.inputs.category }}): Add '${{ github.event.inputs.title }}'"
           file_pattern: index.html
           commit_user_name: github-actions[bot]
